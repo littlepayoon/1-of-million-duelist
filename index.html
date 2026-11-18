@@ -1,10 +1,8 @@
-<title>1 of Million Duelist</title>
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="description" content="เกมจำลองชีวิตนักเล่นการ์ดเกมไทย เกิดจนตาย ชีวิตของคุณจะจบแบบไหน? แชมป์โลก เจ้าของร้าน หรือโดนแบน"><meta property="og:type" content="website"><meta property="og:site_name" content="1 of Million Duelist"><meta property="og:title" content="1 of Million Duelist"><meta property="og:description" content="เกมจำลองชีวิตนักเล่นการ์ดเกมไทย เกิดจนตาย ชีวิตของคุณจะจบแบบไหน? แชมป์โลก เจ้าของร้าน หรือโดนแบน"><meta property="og:url" content="https://littlepayoon.github.io/1-of-million-duelist/"><meta property="og:image" content="https://littlepayoon.github.io/1-of-million-duelist/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><title>1 of Million Duelist</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* One-screen game stage. Landscape = scene left, panel right. Portrait = scene top, panel below. */
-:root{--bg:#e9edf5;--fg:#1d1b32;--muted:#5a5775;--panel:#fff;--line:#b9bfd6;--accent:#2a3f8f;--accent-fg:#fff;--win:#1b2a7a;--winfg:#fff;--gold:#ffd98a;--up:#1f7a3a;--dn:#b3261e}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#14121f;--fg:#ece9ff;--muted:#a9a5c8;--panel:#201c33;--line:#3b3560;--accent:#f2c94c;--accent-fg:#14121f;--up:#2e9a50;--dn:#d4423a;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#14121f;--fg:#ece9ff;--muted:#a9a5c8;--panel:#201c33;--line:#3b3560;--accent:#f2c94c;--accent-fg:#14121f;--up:#2e9a50;--dn:#d4423a;color-scheme:dark}
+:root{--bg:#0b0a12;--fg:#ece9ff;--muted:#a9a5c8;--panel:#181528;--line:#3b3560;--accent:#f2c94c;--accent-fg:#14121f;--win:#1b2a7a;--winfg:#fff;--gold:#ffd98a;--up:#2e9a50;--dn:#d4423a;color-scheme:dark}
 *,*::before,*::after{box-sizing:border-box}
 html,body{height:100%;margin:0;overflow:hidden}
 body{background:var(--bg);color:var(--fg);font-family:"Noto Sans Thai","Sarabun","Leelawadee UI",Tahoma,system-ui,sans-serif;line-height:1.45;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
@@ -1040,8 +1038,8 @@ function again(){clearTimeout(tm);clearTimeout(mtm);gd=store('ooM_g');showTitle(
 function shareFb(){var u=window.__SITE||'';
  if(!u){note=T('nolink');renderEnd();return}
  try{navigator.clipboard.writeText(u)}catch(e){}
- var w=null;try{w=window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(u),'_blank','noopener')}catch(e){}
- if(!w){note=u;renderEnd()}}
+ var w=null;try{w=window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(u),'_blank');if(w)w.opener=null}catch(e){}
+ if(!w){note=T('copied');renderEnd()}}
 function copyLink(){var u=window.__SITE||'';
  if(!u){note=T('nolink');renderEnd();return}
  var ok=function(){note=T('copied');renderEnd()};
