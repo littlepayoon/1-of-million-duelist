@@ -95,7 +95,7 @@ body{background:var(--bg);color:var(--fg);font-family:"Noto Sans Thai","Sarabun"
   </div>
  </div>
 </div>
-<div id="ov" hidden><img id="cardimg" alt=""><div id="ovh"></div><button id="cls" type="button"></button></div>
+<div id="ov" hidden><img id="cardimg" alt=""><div id="ovh"></div><button id="fbgo" type="button" hidden></button><button id="cls" type="button"></button></div>
 <script>var STR={
 th:{
  tag:'เกิดมาเป็นนักเล่นการ์ดในประเทศไทย ชีวิตในวงการการ์ดเกมของคุณจะไปสิ้นสุดที่ใด จะเป็นคนที่มีแสงส่องเจิดจรัส หรือ เลือนหายไปแบบไม่มีใครจำ?',
@@ -127,6 +127,7 @@ th:{
  line:'ถ้าเกมนี้พาคุณคิดถึงอะไรสักอย่าง ลองแวะดูสติกเกอร์ไลน์ของผู้สร้างได้ ♥',
  age:'อายุ {a}',dates:'พ.ศ. {b} – {d} (อายุ {a} ปี)',kt:'เหตุการณ์สำคัญในชีวิต',
  cta:'คุณจะจบแบบไหน? ลองเกิดเป็นนักเล่นการ์ดในประเทศไทย',playAt:'เล่นได้ที่',
+ fbhint:'บันทึกรูปนี้ (คลิกขวา/กดค้าง) แล้วกด “เปิด Facebook” จากนั้นแนบรูปในโพสต์ ลิงก์เกมถูกคัดลอกไว้ให้แล้ว',fbgo:'เปิด Facebook',sharetxt:'ชีวิตนักเล่นการ์ดของฉันจบแบบนี้ ลองเล่นดูสิ',
  hint:'กดค้างที่รูป (มือถือ) หรือคลิกขวา (คอม) เพื่อบันทึก แล้วโพสต์พร้อมลิงก์เกม',close:'ปิด',copied:'คัดลอกลิงก์แล้ว',nolink:'ลิงก์เกมจะแสดงเมื่อเกมถูกเผยแพร่แล้ว',
  alt:'ฉากในเกม',altC:'การ์ดสรุปชีวิตสำหรับแชร์',
  moved:'ย้ายไปอยู่ที่{p}',gone:'จากไปตอนอายุ {a}'},
@@ -160,6 +161,7 @@ en:{
  line:'If this game reminded you of something, you can check out the creator\'s LINE stickers ♥',
  age:'Age {a}',dates:'{b} – {d} (aged {a})',kt:'Key moments in your life',
  cta:'How will yours end? Be born as a card player in Thailand.',playAt:'Play at',
+ fbhint:'Save this image (right-click / long-press), then tap Open Facebook and attach it to your post. The game link is already copied.',fbgo:'Open Facebook',sharetxt:'This is how my card-player life ended. Try yours!',
  hint:'Long-press the image (mobile) or right-click (desktop) to save it, then post it with the game link.',close:'Close',copied:'Link copied',nolink:'The game link appears once the game is published.',
  alt:'Game scene',altC:'Life summary card to share',
  moved:'You moved to {p}.',gone:'Passed away at age {a}'}
@@ -813,7 +815,7 @@ function pump(){
 function start(){
  var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
  if(!ac){try{ac=new AC();mg=ac.createGain();mg.gain.value=0.6;mg.connect(ac.destination)}catch(e){ac=null;return}}
- ac.resume();started=true;
+ try{var pr=ac.resume();if(pr&&pr.catch)pr.catch(function(){})}catch(e){}started=true;
  if(!sched){nextT=ac.currentTime+0.1;sched=setInterval(pump,25)}}
 function stop(){clearInterval(sched);sched=null;if(ac)ac.suspend()}
 function click(){if(ac&&!muted&&ac.state==='running')tone('square',880,ac.currentTime,0.07,0.04)}
@@ -824,7 +826,7 @@ function sfx(k){if(!ac||muted||ac.state!=='running')return;var t=ac.currentTime;
 function setTrack(t){if(track===t)return;track=t;step=0;if(ac)nextT=ac.currentTime+0.1}
 function setMuted(v){muted=v;try{localStorage.setItem('duelist-muted',v?'1':'0')}catch(e){}
  if(v)stop();else start()}
-function arm(){['pointerdown','keydown'].forEach(function(ev){document.addEventListener(ev,function(){if(!muted&&!started)start()},{once:true})})}
+function arm(){['pointerdown','pointerup','click','touchend','keydown'].forEach(function(ev){document.addEventListener(ev,function(){if(muted)return;if(!ac||ac.state!=='running')start()},true)})}
 return {start:start,stop:stop,sfx:sfx,click:click,setTrack:setTrack,setMuted:setMuted,isMuted:function(){return muted},arm:arm}
 })();
 
@@ -1035,11 +1037,16 @@ function step(){tm=setTimeout(function(){if(ph!=='reveal')return;rv++;var rows=d
 function startMem(){clearTimeout(mtm);mem=0;fc=0;nextMem()}
 function nextMem(){clearTimeout(mtm);mtm=setTimeout(function(){if(ph!=='card')return;mem=(mem+1)%mom.length;fc=0;if(REDUCED)drawCard(false);nextMem()},3200)}
 function again(){clearTimeout(tm);clearTimeout(mtm);gd=store('ooM_g');showTitle()}
+function openFb(u){var w=null;try{w=window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(u),'_blank');if(w)w.opener=null}catch(e){}return !!w}
 function shareFb(){var u=window.__SITE||'';
  if(!u){note=T('nolink');renderEnd();return}
- try{navigator.clipboard.writeText(u)}catch(e){}
- var w=null;try{w=window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(u),'_blank');if(w)w.opener=null}catch(e){}
- if(!w){note=T('copied');renderEnd()}}
+ try{navigator.clipboard.writeText(u).catch(function(){})}catch(e){}
+ drawCard(true);var cv=cd;drawCard(false);
+ var viaOverlay=function(){var url=cv.toDataURL('image/png');$('cardimg').src=url;$('ovh').textContent=T('fbhint');$('cls').textContent=T('close');var g=$('fbgo');g.textContent=T('fbgo');g.hidden=false;g.onclick=function(){openFb(u)};$('ov').hidden=false};
+ try{cv.toBlob(function(bl){
+  try{var fl=new File([bl],'1-of-million-duelist.png',{type:'image/png'});
+   if(navigator.canShare&&navigator.canShare({files:[fl]})){navigator.share({files:[fl],text:T('sharetxt'),url:u}).catch(function(){});return}}catch(e){}
+  viaOverlay()},'image/png')}catch(e){viaOverlay()}}
 function copyLink(){var u=window.__SITE||'';
  if(!u){note=T('nolink');renderEnd();return}
  var ok=function(){note=T('copied');renderEnd()};
@@ -1092,7 +1099,7 @@ function drawCard(fin){
  if(window.__SITE){c.textAlign='right';c.fillStyle='#f2c94c';c.font='700 22px '+FF;c.fillText(window.__SITE.replace(/^https?:\/\//,''),1156,598);c.textAlign='left'}}
 function saveCard(){
  var fnc=function(){drawCard(true);var url=cd.toDataURL('image/png');drawCard(false);
-  $('cardimg').src=url;$('ovh').textContent=T('hint');$('cls').textContent=T('close');$('ov').hidden=false};
+  $('cardimg').src=url;$('ovh').textContent=T('hint');$('fbgo').hidden=true;$('cls').textContent=T('close');$('ov').hidden=false};
  fnc()}
 
 /* ---------- boot ---------- */
@@ -1100,7 +1107,7 @@ function boot(){
  LANG=store('ooM_lang')||((navigator.language||'').indexOf('th')===0?'th':'en');
  document.querySelectorAll('[data-lg]').forEach(function(b){b.onclick=function(){LANG=b.dataset.lg;store('ooM_lang',LANG);rerender()}});
  $('mu').onclick=function(){Aud.setMuted(!Aud.isMuted());langBtns()};
- $('cls').onclick=function(){$('ov').hidden=true};
+ $('cls').onclick=function(){$('ov').hidden=true;$('fbgo').hidden=true};
  Aud.arm();
  document.addEventListener('click',function(ev){var b=ev.target.closest('.choices button');if(b&&!b.disabled)Aud.click()});
  if(!REDUCED)setInterval(function(){f=(f+1)%4;fc++;if(!(view==='end'&&ph==='card'&&mem>=mom.length))paint()},220);
