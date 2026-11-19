@@ -127,7 +127,7 @@ th:{
  line:'ถ้าเกมนี้พาคุณคิดถึงอะไรสักอย่าง ลองแวะดูสติกเกอร์ไลน์ของผู้สร้างได้ ♥',
  age:'อายุ {a}',dates:'พ.ศ. {b} – {d} (อายุ {a} ปี)',kt:'เหตุการณ์สำคัญในชีวิต',
  cta:'คุณจะจบแบบไหน? ลองเกิดเป็นนักเล่นการ์ดในประเทศไทย',playAt:'เล่นได้ที่',
- fbdone:'บันทึกรูปการ์ดลงเครื่องแล้ว กดแนบรูปนั้นในโพสต์ Facebook ได้เลย',fbhint:'บันทึกรูปนี้ (คลิกขวา/กดค้าง) แล้วกด “เปิด Facebook” จากนั้นแนบรูปในโพสต์ ลิงก์เกมถูกคัดลอกไว้ให้แล้ว',fbgo:'เปิด Facebook',sharetxt:'ชีวิตนักเล่นการ์ดของฉันจบแบบนี้ ลองเล่นดูสิ',
+ fbdone:'บันทึกรูปการ์ดแล้ว และคัดลอกข้อความพร้อมลิงก์เกมไว้ให้ ในโพสต์ Facebook กดวางข้อความ แล้วแนบรูปการ์ดได้เลย',fbhint:'บันทึกรูปนี้ (คลิกขวา/กดค้าง) แล้วกด “เปิด Facebook” จากนั้นแนบรูปในโพสต์ ลิงก์เกมถูกคัดลอกไว้ให้แล้ว',fbgo:'เปิด Facebook',sharetxt:'ชีวิตนักเล่นการ์ดของฉันจบแบบนี้ ลองเล่นดูสิ',
  hint:'กดค้างที่รูป (มือถือ) หรือคลิกขวา (คอม) เพื่อบันทึก แล้วโพสต์พร้อมลิงก์เกม',close:'ปิด',copied:'คัดลอกลิงก์แล้ว',nolink:'ลิงก์เกมจะแสดงเมื่อเกมถูกเผยแพร่แล้ว',
  alt:'ฉากในเกม',altC:'การ์ดสรุปชีวิตสำหรับแชร์',
  moved:'ย้ายไปอยู่ที่{p}',gone:'จากไปตอนอายุ {a}'},
@@ -161,7 +161,7 @@ en:{
  line:'If this game reminded you of something, you can check out the creator\'s LINE stickers ♥',
  age:'Age {a}',dates:'{b} – {d} (aged {a})',kt:'Key moments in your life',
  cta:'How will yours end? Be born as a card player in Thailand.',playAt:'Play at',
- fbdone:'Card image saved to your device. Attach it in your Facebook post.',fbhint:'Save this image (right-click / long-press), then tap Open Facebook and attach it to your post. The game link is already copied.',fbgo:'Open Facebook',sharetxt:'This is how my card-player life ended. Try yours!',
+ fbdone:'Card image saved, and the post text with the game link is copied. Paste it into your Facebook post and attach the card image.',fbhint:'Save this image (right-click / long-press), then tap Open Facebook and attach it to your post. The game link is already copied.',fbgo:'Open Facebook',sharetxt:'This is how my card-player life ended. Try yours!',
  hint:'Long-press the image (mobile) or right-click (desktop) to save it, then post it with the game link.',close:'Close',copied:'Link copied',nolink:'The game link appears once the game is published.',
  alt:'Game scene',altC:'Life summary card to share',
  moved:'You moved to {p}.',gone:'Passed away at age {a}'}
@@ -1580,13 +1580,16 @@ function step(){tm=setTimeout(function(){if(ph!=='reveal')return;rv++;var rows=d
 function startMem(){clearTimeout(mtm);mem=0;fc=0;nextMem()}
 function nextMem(){clearTimeout(mtm);mtm=setTimeout(function(){if(ph!=='card')return;mem=(mem+1)%mom.length;fc=0;if(REDUCED)drawCard(false);nextMem()},3200)}
 function again(){clearTimeout(tm);clearTimeout(mtm);gd=store('ooM_g');showTitle()}
-function openFb(u){var w=null;try{w=window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(u),'_blank');if(w)w.opener=null}catch(e){}return !!w}
+function openFb(){var w=null;try{w=window.open('https://www.facebook.com/','_blank');if(w)w.opener=null}catch(e){}return !!w}
+function postText(){return T('sharetxt')+'\n'+(window.__SITE||'')}
 function shareFb(){var u=window.__SITE||'';
  if(!u){note=T('nolink');renderEnd();return}
- try{navigator.clipboard.writeText(u).catch(function(){})}catch(e){}
  drawCard(true);var url0=cd.toDataURL('image/png');drawCard(false);
+ var fl=null;try{var m=url0.split(',')[1],bin=atob(m),n=bin.length,u8=new Uint8Array(n);while(n--)u8[n]=bin.charCodeAt(n);fl=new File([u8],'1-of-million-duelist.png',{type:'image/png'})}catch(e){}
+ try{if(fl&&navigator.canShare&&navigator.canShare({files:[fl]})){navigator.share({files:[fl],text:postText()}).catch(function(){});return}}catch(e){}
+ try{navigator.clipboard.writeText(postText()).catch(function(){})}catch(e){}
  try{var a=document.createElement('a');a.href=url0;a.download='1-of-million-duelist.png';document.body.appendChild(a);a.click();document.body.removeChild(a)}catch(e){}
- var ok=openFb(u);note=T(ok?'fbdone':'copied');renderEnd()}
+ var ok=openFb();note=T(ok?'fbdone':'copied');renderEnd()}
 function copyLink(){var u=window.__SITE||'';
  if(!u){note=T('nolink');renderEnd();return}
  var ok=function(){note=T('copied');renderEnd()};
