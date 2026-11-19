@@ -1588,7 +1588,7 @@ function shareFb(){var u=window.__SITE||'';
  if(!u){note=T('nolink');renderEnd();return}
  drawCard(true);var url0=cd.toDataURL('image/png');drawCard(false);
  var fl=null;try{var m=url0.split(',')[1],bin=atob(m),n=bin.length,u8=new Uint8Array(n);while(n--)u8[n]=bin.charCodeAt(n);fl=new File([u8],'1-of-million-duelist.png',{type:'image/png'})}catch(e){}
- try{if(fl&&navigator.canShare&&navigator.canShare({files:[fl]})){navigator.share({files:[fl],text:postText()}).catch(function(){});return}}catch(e){}
+ try{var touch=window.matchMedia&&matchMedia('(pointer:coarse)').matches;if(touch&&fl&&navigator.canShare&&navigator.canShare({files:[fl]})){navigator.share({files:[fl],text:postText()}).catch(function(){});return}}catch(e){}
  var copied=false;try{if(fl&&window.ClipboardItem&&navigator.clipboard&&navigator.clipboard.write){navigator.clipboard.write([new ClipboardItem({'image/png':fl})]).catch(function(){});copied=true}}catch(e){}
  if(!copied){try{navigator.clipboard.writeText(postText()).catch(function(){})}catch(e){}}
  try{var a=document.createElement('a');a.href=url0;a.download='1-of-million-duelist.png';document.body.appendChild(a);a.click();document.body.removeChild(a)}catch(e){}
